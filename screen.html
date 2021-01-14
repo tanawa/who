@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <meta charset="utf-8">
+    <title></title>
+    <style>
+      input[type="submit"]{
+        margin-top:20px;
+        border:1px solid transparent;
+        padding:10px 25px;
+        box-shadow:0px 0x 15px 0px #DDD;
+        border-radius:10px;
+      }
+      input[type="file"]{
+        z-index: 10;
+        width:200;
+        height:220px;
+        border:0px solid transparent;
+        outline:none;
+        opacity:0;
+        position: absolute;
+      }
+      img{
+        position: relative;
+        margin-top:20px;
+        width:200px;
+        height:200px;
+        border:0px solid transparent;
+        border-radius:30px;
+        background:#FFF;
+        box-shadow: 0px 0px 10px 10px rgba(243,237,240,0.8);
+      }
+      .submit{
+        color:#fff;
+        font-weight:bold;
+        outline:none;
+        margin-top:20px;
+        width:200px;
+        padding: 16px 25px;
+        border:0px solid transparent;
+        border-radius:10px;
+        background:linear-gradient(270deg,rgba(186, 124, 252 ,1),rgba(142, 95, 193 ,1));
+      }
+      button
+    </style>
+    <script>
+      var xhr = new XMLHttpRequest();
+      xhr.open('POST', 'https://apibuen.herokuapp.com/', true);
+      labels=["เสือหมอบ","เสืเสือคำราม","แอปเปิ้ล","เสือเผ่น"]
+
+      function actions(){
+        console.log("ss")
+        document.getElementById("predict").innerHTML="กำลังประมวลผล"
+        var file=document.getElementById("files").files
+        if(file.length!=0){
+          var formData = new FormData();
+          //formData.append('file',file,file.name);
+          formData.append('file',file[0],file.name);
+
+          xhr.send(formData);
+          xhr.onload = function (e) {
+            if (xhr.status === 200) {
+            let y=JSON.parse(e["currentTarget"]["response"])
+            console.log(y)
+            document.getElementById("predict").innerHTML="รุ่น"+labels[y["prediction"]]
+          } else {
+            document.getElementById("predict").innerHTML="เกิดข้อผิดพลาด"
+          }
+          };
+        }else{
+          document.getElementById("predict").innerHTML="กรุณาเลือกไฟล์"
+        }
+
+
+      }
+      function img_ch(){
+        var reader = new FileReader();
+
+        var file=document.getElementById("files").files
+        reader.readAsDataURL(file[0])
+        reader.onload = function (e) {
+           document.getElementById("image").src=e.target.result
+        }
+
+      }
+
+    </script>
+  </head>
+  <body>
+    <center>
+    <br>
+      <h3 id="predict">ทำนายภาพพระ</h3>
+    <form action="https://apitnwbu.herokuapp.com/" method="post" enctype="multipart/form-data">
+      <input type="file" name="file" value="" id="files" onchange="img_ch()">
+      <img src="bg.png" id="image" width="210" height="210">
+      <br>
+
+      <button type="button" name="button" onclick="actions()" class="submit">วิเคราะห์</button>
+    </form>
+    </center>
+  </body>
+</html>
